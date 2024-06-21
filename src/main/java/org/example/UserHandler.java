@@ -31,14 +31,56 @@ public class UserHandler implements Runnable{
         while(socket.isConnected()){
             try{
                 userMessage = bufferedReader.readLine();
-                broadcastMessage(userMessage);
+                if(userMessage.split(":")[1].equals(" /online")){
+                online();
+                } else if (userMessage.contains(": /w ")) {
+                    String message = userMessage.replace(username+": /w ","");
+                    //System.out.println(message);
+                    privateMessage(message);
+                }
+                else {
+                    broadcastMessage(userMessage);
+                }
             }catch (IOException e){
                 closeEverything(socket,bufferedReader,bufferedWriter);
                 break;
             }
         }
     }
+    public void privateMessage(String message){
+        try{
+            for (UserHandler userHandler : userHandlers){
 
+                if (userHandler.username.equals(message.split(" ",2)[0])){
+                    String pvMessage = message.split(" ",2)[1];
+                    userHandler.bufferedWriter.write(username+" [Private]: "+pvMessage);
+                    userHandler.bufferedWriter.newLine();
+                    userHandler.bufferedWriter.flush();
+                }
+
+            }
+        }catch (IOException e){
+            closeEverything(socket,bufferedReader,bufferedWriter);
+        }
+
+    }
+    public void online(){
+        try {
+            for (UserHandler userHandler : userHandlers) {
+                if (userHandler.username.equals(username)){
+                    bufferedWriter.write("<You> "+userHandler.username);
+                    bufferedWriter.newLine();
+                }
+                else {
+                    bufferedWriter.write(userHandler.username);
+                    bufferedWriter.newLine();
+                }
+            }
+            bufferedWriter.flush();
+        }catch (IOException e){
+            closeEverything(socket,bufferedReader,bufferedWriter);
+        }
+    }
     public void broadcastMessage(String msgToSend){
         for (UserHandler userHandler: userHandlers){
             try{

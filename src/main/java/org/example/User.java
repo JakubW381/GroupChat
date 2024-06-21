@@ -31,9 +31,10 @@ public class User {
             Scanner scanner = new Scanner(System.in);
             while (socket.isConnected()){
                 String msgToSend = scanner.nextLine();
-                bufferedWriter.write(username+": "+msgToSend);
-                bufferedWriter.newLine();
-                bufferedWriter.flush();
+
+                    bufferedWriter.write(username+": "+msgToSend);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
             }
         }catch (IOException e){
             closeEverything(socket,bufferedReader,bufferedWriter);
